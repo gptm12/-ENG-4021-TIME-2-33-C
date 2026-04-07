@@ -1,1 +1,302 @@
 
+Modelagem de Dados do Sistema
+1. Visão geral do sistema
+
+O sistema tem como objetivo permitir que motoristas:
+
+consultem postos de combustível;
+vejam preços atualizados por tipo de combustível;
+filtrem por localização;
+acompanhem histórico de preços;
+contribuam com novos preços informados na plataforma.
+2. Entidades principais
+
+As entidades principais do sistema são:
+
+Usuário
+Posto
+Endereço
+Combustível
+Preço
+Histórico de Preço
+Avaliação
+Envio de Preço
+Favorito
+Cidade
+Estado
+3. Entidades, propriedades e tipos
+3.1. Usuário
+
+Representa a pessoa que utiliza a plataforma.
+
+Propriedade	Tipo	Descrição
+id_usuario	INT	Identificador único do usuário
+nome	VARCHAR(100)	Nome do usuário
+email	VARCHAR(150)	E-mail do usuário
+senha_hash	VARCHAR(255)	Senha criptografada
+telefone	VARCHAR(20)	Telefone do usuário
+tipo_usuario	VARCHAR(20)	Ex.: motorista, administrador
+data_cadastro	DATETIME	Data de cadastro
+status_conta	BOOLEAN	Conta ativa ou inativa
+3.2. Posto
+
+Representa cada posto de combustível cadastrado.
+
+Propriedade	Tipo	Descrição
+id_posto	INT	Identificador único do posto
+nome_fantasia	VARCHAR(120)	Nome do posto
+cnpj	VARCHAR(18)	CNPJ do posto
+bandeira	VARCHAR(50)	Ex.: Petrobras, Ipiranga, Shell, sem bandeira
+telefone	VARCHAR(20)	Telefone do posto
+horario_funcionamento	VARCHAR(100)	Horário de funcionamento
+possui_conveniencia	BOOLEAN	Indica se possui loja de conveniência
+possui_lava_jato	BOOLEAN	Indica se possui lava-jato
+nota_media	DECIMAL(2,1)	Média das avaliações
+status_ativo	BOOLEAN	Indica se o posto está ativo no sistema
+3.3. Endereço
+
+Armazena os dados de localização do posto.
+
+Propriedade	Tipo	Descrição
+id_endereco	INT	Identificador único do endereço
+logradouro	VARCHAR(150)	Rua, avenida etc.
+numero	VARCHAR(10)	Número do endereço
+complemento	VARCHAR(100)	Complemento
+bairro	VARCHAR(100)	Bairro
+cep	VARCHAR(10)	CEP
+latitude	DECIMAL(10,8)	Latitude geográfica
+longitude	DECIMAL(11,8)	Longitude geográfica
+id_cidade	INT	Chave estrangeira para cidade
+3.4. Cidade
+
+Representa a cidade do posto.
+
+Propriedade	Tipo	Descrição
+id_cidade	INT	Identificador da cidade
+nome_cidade	VARCHAR(100)	Nome da cidade
+id_estado	INT	Chave estrangeira para estado
+3.5. Estado
+
+Representa o estado ao qual a cidade pertence.
+
+Propriedade	Tipo	Descrição
+id_estado	INT	Identificador do estado
+nome_estado	VARCHAR(100)	Nome do estado
+sigla	CHAR(2)	Sigla do estado
+3.6. Combustível
+
+Armazena os tipos de combustível.
+
+Propriedade	Tipo	Descrição
+id_combustivel	INT	Identificador do combustível
+nome_combustivel	VARCHAR(50)	Ex.: gasolina comum, gasolina aditivada, etanol, diesel S10, GNV
+unidade_medida	VARCHAR(20)	Ex.: litro, m³
+descricao	VARCHAR(150)	Descrição complementar
+3.7. Preço
+
+Representa o preço atual de um combustível em um posto.
+
+Propriedade	Tipo	Descrição
+id_preco	INT	Identificador do preço
+id_posto	INT	Chave estrangeira para posto
+id_combustivel	INT	Chave estrangeira para combustível
+valor	DECIMAL(5,3)	Valor do combustível
+data_atualizacao	DATETIME	Data e hora da atualização
+origem_dado	VARCHAR(20)	Ex.: usuário, administrador, API
+id_usuario_atualizacao	INT	Usuário que informou/atualizou o preço
+confiavel	BOOLEAN	Indica se o preço foi validado
+3.8. Histórico de Preço
+
+Armazena todas as alterações de preço ao longo do tempo.
+
+Propriedade	Tipo	Descrição
+id_historico_preco	INT	Identificador do histórico
+id_posto	INT	Chave estrangeira para posto
+id_combustivel	INT	Chave estrangeira para combustível
+valor_anterior	DECIMAL(5,3)	Valor anterior
+valor_novo	DECIMAL(5,3)	Novo valor
+data_alteracao	DATETIME	Data da alteração
+id_usuario_responsavel	INT	Usuário que enviou a alteração
+fonte_alteracao	VARCHAR(20)	Ex.: colaborativa, sistema, administrador
+3.9. Avaliação
+
+Permite que usuários avaliem postos.
+
+Propriedade	Tipo	Descrição
+id_avaliacao	INT	Identificador da avaliação
+id_usuario	INT	Chave estrangeira para usuário
+id_posto	INT	Chave estrangeira para posto
+nota	INT	Nota de 1 a 5
+comentario	TEXT	Comentário do usuário
+data_avaliacao	DATETIME	Data da avaliação
+3.10. Envio de Preço
+
+Registra o envio de novos preços pelos usuários antes de validação.
+
+Propriedade	Tipo	Descrição
+id_envio_preco	INT	Identificador do envio
+id_usuario	INT	Chave estrangeira para usuário
+id_posto	INT	Chave estrangeira para posto
+id_combustivel	INT	Chave estrangeira para combustível
+valor_informado	DECIMAL(5,3)	Preço enviado
+data_envio	DATETIME	Data do envio
+status_envio	VARCHAR(20)	Ex.: pendente, aprovado, rejeitado
+observacao	VARCHAR(255)	Observações da validação
+3.11. Favorito
+
+Relaciona usuários aos postos salvos como favoritos.
+
+Propriedade	Tipo	Descrição
+id_favorito	INT	Identificador único
+id_usuario	INT	Chave estrangeira para usuário
+id_posto	INT	Chave estrangeira para posto
+data_favorito	DATETIME	Data em que foi favoritado
+4. Relacionamentos e cardinalidades
+4.1. Usuário — Avaliação — Posto
+Um usuário pode fazer várias avaliações.
+Um posto pode receber várias avaliações.
+Cada avaliação pertence a um único usuário e a um único posto.
+
+Cardinalidade:
+
+Usuário 1 : N Avaliação
+Posto 1 : N Avaliação
+4.2. Usuário — Envio de Preço — Posto — Combustível
+Um usuário pode enviar vários preços.
+Um posto pode ter vários envios de preços.
+Um combustível pode aparecer em vários envios.
+
+Cardinalidade:
+
+Usuário 1 : N Envio de Preço
+Posto 1 : N Envio de Preço
+Combustível 1 : N Envio de Preço
+4.3. Posto — Preço — Combustível
+Um posto pode ter vários preços, um para cada tipo de combustível.
+Um combustível pode estar associado a vários postos.
+Assim, entre Posto e Combustível existe um relacionamento N : N, resolvido pela entidade Preço.
+
+Cardinalidade:
+
+Posto 1 : N Preço
+Combustível 1 : N Preço
+4.4. Posto — Histórico de Preço — Combustível
+Um posto possui vários registros históricos.
+Um combustível pode ter vários históricos em diferentes postos.
+O histórico registra cada alteração de valor.
+
+Cardinalidade:
+
+Posto 1 : N Histórico de Preço
+Combustível 1 : N Histórico de Preço
+4.5. Posto — Endereço
+Cada posto possui um único endereço.
+Cada endereço pertence a um único posto.
+
+Cardinalidade:
+
+Posto 1 : 1 Endereço
+4.6. Cidade — Endereço
+Uma cidade pode ter vários endereços.
+Cada endereço pertence a uma cidade.
+
+Cardinalidade:
+
+Cidade 1 : N Endereço
+4.7. Estado — Cidade
+Um estado possui várias cidades.
+Cada cidade pertence a um único estado.
+
+Cardinalidade:
+
+Estado 1 : N Cidade
+4.8. Usuário — Favorito — Posto
+Um usuário pode favoritar vários postos.
+Um posto pode ser favoritado por vários usuários.
+Portanto, existe um relacionamento N : N, resolvido pela entidade Favorito.
+
+Cardinalidade:
+
+Usuário 1 : N Favorito
+Posto 1 : N Favorito
+5. Resumo do modelo relacional
+Tabelas e chaves primárias/estrangeiras
+Usuario
+PK: id_usuario
+Posto
+PK: id_posto
+Endereco
+PK: id_endereco
+FK: id_cidade → Cidade(id_cidade)
+Cidade
+PK: id_cidade
+FK: id_estado → Estado(id_estado)
+Estado
+PK: id_estado
+Combustivel
+PK: id_combustivel
+Preco
+PK: id_preco
+FK: id_posto → Posto(id_posto)
+FK: id_combustivel → Combustivel(id_combustivel)
+FK: id_usuario_atualizacao → Usuario(id_usuario)
+Historico_Preco
+PK: id_historico_preco
+FK: id_posto → Posto(id_posto)
+FK: id_combustivel → Combustivel(id_combustivel)
+FK: id_usuario_responsavel → Usuario(id_usuario)
+Avaliacao
+PK: id_avaliacao
+FK: id_usuario → Usuario(id_usuario)
+FK: id_posto → Posto(id_posto)
+Envio_Preco
+PK: id_envio_preco
+FK: id_usuario → Usuario(id_usuario)
+FK: id_posto → Posto(id_posto)
+FK: id_combustivel → Combustivel(id_combustivel)
+Favorito
+PK: id_favorito
+FK: id_usuario → Usuario(id_usuario)
+FK: id_posto → Posto(id_posto)
+6. Regras de negócio importantes
+Um posto pode ter somente um preço atual por tipo de combustível.
+Exemplo: um posto não pode ter dois preços atuais diferentes para gasolina comum ao mesmo tempo.
+Todo preço atualizado deve gerar um registro no Histórico de Preço.
+O usuário pode enviar preço, mas o sistema pode exigir validação antes de tornar esse preço oficial.
+Um usuário pode avaliar o mesmo posto apenas uma vez, ou então editar sua avaliação anterior.
+Um posto deve obrigatoriamente estar associado a um endereço válido.
+O campo nota_media de Posto pode ser calculado a partir das avaliações.
+O relacionamento entre posto e combustível é resolvido por Preço, pois um posto vende vários combustíveis e um combustível é vendido em vários postos.
+7. Modelo conceitual resumido
+USUÁRIO
+ ├── realiza → AVALIAÇÃO ← recebe ── POSTO
+ ├── envia → ENVIO_PREÇO ← refere-se ── POSTO
+ ├── atualiza → PREÇO ← pertence a ── POSTO
+ └── favorita → FAVORITO ← associado a ── POSTO
+
+POSTO
+ ├── possui → ENDEREÇO → CIDADE → ESTADO
+ ├── possui → PREÇO ← tipo ── COMBUSTÍVEL
+ └── possui → HISTÓRICO_PREÇO ← tipo ── COMBUSTÍVEL
+8. Sugestão de tipos SQL
+
+Caso você queira implementar em banco relacional, os tipos podem seguir este padrão:
+
+INT para identificadores
+VARCHAR(n) para textos curtos
+TEXT para comentários longos
+BOOLEAN para verdadeiro/falso
+DATETIME para data e hora
+DECIMAL(5,3) para preços de combustíveis
+CHAR(2) para UF
+9. Conclusão
+
+Essa modelagem atende bem um sistema de comparação de preços de combustíveis porque permite:
+
+cadastrar usuários e postos;
+armazenar localização;
+registrar preços atuais;
+manter histórico de alterações;
+receber contribuições colaborativas;
+salvar favoritos;
+avaliar postos.
