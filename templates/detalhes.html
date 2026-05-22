@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalhes - AbasteceAi</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Detalhes do Posto</h1>
+        </header>
+
+        <div class="card">
+            <h3>{{ posto.nome }}</h3>
+            <p>{{ posto.endereco }}</p>
+            <p>Bandeira: {{ posto.bandeira }}</p>
+            <p>Avaliacao: {{ posto.avaliacao }} estrelas</p>
+        </div>
+
+        <h2 style="margin: 15px 0 10px;">Precos Atuais</h2>
+        <ul class="lista-precos">
+            {% for preco in posto.precos.all %}
+                <li><span>{{ preco.get_tipo_display }}</span> <strong>R$ {{ preco.valor }}</strong></li>
+            {% empty %}
+                <li>Sem precos cadastrados.</li>
+            {% endfor %}
+        </ul>
+
+        <h2 style="margin: 20px 0 10px;">Comercios no Posto</h2>
+        <ul class="lista-precos">
+            {% for c in posto.comodidades.all %}
+                <li>{{ c.nome }} ({{ c.get_tipo_display }})</li>
+            {% empty %}
+                <li>Nenhum comercio cadastrado.</li>
+            {% endfor %}
+        </ul>
+
+        <a href="{% url 'home' %}" class="botao botao-secundario">Voltar</a>
+    </div>
+</body>
+</html>

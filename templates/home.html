@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Inicio - AbasteceAi</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AbasteceAi</h1>
+            <p>Postos proximos a voce</p>
+        </header>
+
+        <div class="form-grupo">
+            <input type="text" placeholder="Buscar posto ou endereco...">
+        </div>
+
+        <h2 style="margin-bottom:10px;">Postos encontrados</h2>
+
+        {% for posto in postos %}
+            <div class="card">
+                <h3>{{ posto.nome }}</h3>
+                <p>{{ posto.endereco }}</p>
+                <p>Avaliacao: {{ posto.avaliacao }} estrelas</p>
+                <a href="{% url 'detalhes' posto.id %}" class="botao">Ver detalhes</a>
+            </div>
+        {% empty %}
+            <p>Nenhum posto cadastrado ainda.</p>
+        {% endfor %}
+
+        <p class="link-rodape">
+            <a href="{% url 'login' %}">Sair</a>
+        </p>
+    </div>
+</body>
+</html>

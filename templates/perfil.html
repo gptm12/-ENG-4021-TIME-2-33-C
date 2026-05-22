@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Meu Perfil - AbasteceAi</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Meu Perfil</h1>
+        </header>
+
+        <div class="card" style="text-align:center;">
+            <h3>Joao da Silva</h3>
+            <p>joao@email.com</p>
+            <p>Membro desde: Janeiro/2025</p>
+        </div>
+
+        <h2 style="margin: 15px 0 10px;">Editar dados</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-grupo">
+                <label for="nome">Nome</label>
+                <input type="text" id="nome" name="nome" value="Joao da Silva">
+            </div>
+            <div class="form-grupo">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" value="joao@email.com">
+            </div>
+            <div class="form-grupo">
+                <label for="telefone">Telefone</label>
+                <input type="text" id="telefone" name="telefone" placeholder="(11) 99999-9999">
+            </div>
+            <button type="submit" class="botao">Salvar alteracoes</button>
+        </form>
+
+        <p class="link-rodape">
+            <a href="{% url 'login' %}">Sair da conta</a>
+        </p>
+    </div>
+</body>
+</html>
